@@ -2,17 +2,17 @@ name: Fetch BGG Images
 
 on:
   push:
-    branches: [main]
+    branches: [master]
     paths:
-      - 'games.json'        # re-run if you update the game list
+      - 'games.json'
       - '.github/workflows/fetch-images.yml'
-  workflow_dispatch:        # also allows manual trigger from GitHub UI
+  workflow_dispatch:
 
 jobs:
   fetch:
     runs-on: ubuntu-latest
     permissions:
-      contents: write       # needed to commit images back to repo
+      contents: write
 
     steps:
       - name: Checkout repo
