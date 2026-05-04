@@ -7,25 +7,25 @@
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',Arial,sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh}
-    header{background:#1e293b;padding:24px 32px;border-bottom:1px solid #334155;display:flex;align-items:center;gap:16px}
+    header{background:#1e293b;padding:24px 32px;border-bottom:1px solid #334155}
     header h1{font-size:1.6rem;font-weight:700;color:#f8fafc}
     header p{color:#94a3b8;margin-top:4px;font-size:.9rem}
-    .controls{display:flex;flex-wrap:wrap;gap:12px;padding:20px 32px;background:#1e293b;border-bottom:1px solid #334155;align-items:center}
-    .controls input,.controls select{padding:10px 14px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#f1f5f9;font-size:.9rem;flex:1;min-width:200px}
-    .controls input:focus,.controls select:focus{outline:2px solid #3b82f6;border-color:#3b82f6}
-    .meta{padding:10px 32px;color:#64748b;font-size:.85rem;background:#0f172a;display:flex;gap:16px;align-items:center}
-    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(215px,1fr));gap:20px;padding:24px 32px}
+    .controls{display:flex;flex-wrap:wrap;gap:12px;padding:20px 32px;background:#1e293b;border-bottom:1px solid #334155}
+    .controls input,.controls select{padding:10px 14px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#f1f5f9;font-size:.9rem;flex:1;min-width:180px}
+    .controls input:focus,.controls select:focus{outline:2px solid #3b82f6}
+    .meta{padding:10px 32px;color:#64748b;font-size:.85rem}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px;padding:24px 32px}
     .card{background:#1e293b;border-radius:12px;overflow:hidden;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column;border:1px solid #334155;cursor:pointer}
     .card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,.6)}
     .img-wrap{width:100%;height:175px;background:#0f172a;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}
-    .img-wrap img{width:100%;height:100%;object-fit:cover;display:block}
-    .img-placeholder{font-size:3rem;color:#1e293b}
-    .rating-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.75);color:#fbbf24;font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:999px;backdrop-filter:blur(4px)}
+    .img-wrap img{width:100%;height:100%;object-fit:cover}
+    .img-placeholder{font-size:3rem;color:#334155}
+    .rating-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.75);color:#fbbf24;font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:999px}
     .card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:6px}
     .card-name{font-size:.95rem;font-weight:700;color:#f8fafc;line-height:1.3}
     .card-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
     .card-type{font-size:.72rem;background:#172554;color:#93c5fd;border:1px solid #1d4ed8;border-radius:999px;padding:3px 9px}
-    .card-players{font-size:.72rem;color:#94a3b8;display:flex;align-items:center;gap:3px}
+    .card-players{font-size:.72rem;color:#94a3b8}
     .card-desc{font-size:.79rem;color:#94a3b8;line-height:1.5;flex:1;margin-top:4px}
     .card-link{display:inline-block;margin-top:10px;font-size:.8rem;color:#60a5fa;text-decoration:none;font-weight:600}
     .card-link:hover{text-decoration:underline}
@@ -33,22 +33,21 @@
     .skeleton{background:linear-gradient(90deg,#1e293b 25%,#334155 50%,#1e293b 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
     .sk-card{border-radius:12px;overflow:hidden;border:1px solid #334155}
-    .sk-img{height:175px}.sk-body{padding:14px}.sk-line{height:14px;border-radius:4px;margin-bottom:10px}
-    .sk-line.short{width:60%}.sk-line.med{width:80%}
-    .error-banner{background:#450a0a;border:1px solid #991b1b;color:#fca5a5;padding:12px 32px;font-size:.9rem}
-    @media(max-width:600px){.grid{padding:12px}.controls,.meta{padding:12px 16px}header{padding:16px}}
+    .sk-img{height:175px}.sk-body{padding:14px}
+    .sk-line{height:14px;border-radius:4px;margin-bottom:10px}
+    .sk-line.s{width:55%}.sk-line.m{width:80%}
+    .error{background:#450a0a;border:1px solid #991b1b;color:#fca5a5;padding:12px 32px;font-size:.9rem;display:none}
+    @media(max-width:600px){.grid{padding:12px}.controls,.meta{padding:12px 16px}header{padding:16px 12px}}
   </style>
 </head>
 <body>
 <header>
-  <div>
-    <h1>🎲 Board Game Catalog</h1>
-    <p>Your personal collection · Click any card to open on BoardGameGeek</p>
-  </div>
+  <h1>🎲 Board Game Catalog</h1>
+  <p>Personal collection · Click any card to view on BoardGameGeek</p>
 </header>
 <div class="controls">
-  <input id="nameSearch" type="text" placeholder="🔍  Search by game name…"/>
-  <select id="typeFilter">
+  <input id="q" type="text" placeholder="🔍 Search by name…"/>
+  <select id="type">
     <option value="">All game types</option>
 <option value="4X / Sci-fi">4X / Sci-fi</option>
 <option value="4X / Strategy">4X / Strategy</option>
@@ -97,104 +96,65 @@
 <option value="Worker placement / Resource management">Worker placement / Resource management</option>
 <option value="Worker placement / Tableau building">Worker placement / Tableau building</option>
   </select>
-  <select id="sortBy">
+  <select id="sort">
     <option value="name">Sort: Name A–Z</option>
-    <option value="rating">Sort: BGG Rating</option>
-    <option value="players">Sort: Player Count</option>
+    <option value="rating">Sort: BGG Rating ↓</option>
+    <option value="players">Sort: Min Players</option>
   </select>
 </div>
-<div class="meta">
-  Showing <strong id="visibleCount">—</strong> of <strong id="totalCount">—</strong> games
-  <span id="loadingMsg" style="color:#3b82f6">⏳ Loading BGG data…</span>
-</div>
-<div id="errorBanner" class="error-banner" style="display:none"></div>
+<div class="meta">Showing <strong id="vis">—</strong> of <strong id="tot">47</strong> games &nbsp;<span id="msg" style="color:#3b82f6">⏳ Loading BGG data…</span></div>
+<div id="err" class="error"></div>
 <div class="grid" id="grid"></div>
-
 <script>
-let ALL_GAMES = [];
+let GAMES=[];
+const skeletons=n=>Array.from({length:n},()=>`<div class="sk-card"><div class="sk-img skeleton"></div><div class="sk-body"><div class="sk-line skeleton"></div><div class="sk-line m skeleton"></div><div class="sk-line s skeleton"></div></div></div>`).join('');
+document.getElementById('grid').innerHTML=skeletons(12);
 
-function skeletonCards(n) {
-  return Array.from({length: n}, () => `
-    <div class="sk-card">
-      <div class="sk-img skeleton"></div>
-      <div class="sk-body">
-        <div class="sk-line skeleton"></div>
-        <div class="sk-line short skeleton"></div>
-        <div class="sk-line med skeleton"></div>
-      </div>
-    </div>`).join('');
-}
-
-function buildGrid(list) {
-  const grid = document.getElementById('grid');
-  document.getElementById('visibleCount').textContent = list.length;
-  if (!list.length) { grid.innerHTML = '<div class="no-results">No games match your search.</div>'; return; }
-  grid.innerHTML = list.map(g => {
-    const imgHtml = g.thumbnail
-      ? `<img src="${g.thumbnail}" alt="${g.name}" loading="lazy" onerror="this.outerHTML='<span class=img-placeholder>🎲</span>'"/>`
-      : `<span class="img-placeholder">🎲</span>`;
-    const ratingHtml = g.rating && g.rating !== 'N/A' && g.rating !== '0.0'
-      ? `<div class="rating-badge">⭐ ${g.rating}</div>` : '';
-    const players = (g.minPlayers && g.maxPlayers && g.minPlayers !== '?')
-      ? `<span class="card-players">👥 ${g.minPlayers}${g.minPlayers !== g.maxPlayers ? '–'+g.maxPlayers : ''}</span>` : '';
-    return `
-      <div class="card" onclick="window.open('${g.bgg}','_blank')">
-        <div class="img-wrap">${imgHtml}${ratingHtml}</div>
-        <div class="card-body">
-          <div class="card-name">${g.name}</div>
-          <div class="card-meta">
-            <span class="card-type">${g.type}</span>
-            ${players}
-          </div>
-          <div class="card-desc">${g.description}</div>
-          <a class="card-link" href="${g.bgg}" target="_blank" rel="noopener" onclick="event.stopPropagation()">View on BGG ↗</a>
-        </div>
-      </div>`;
+function render(list){
+  document.getElementById('vis').textContent=list.length;
+  const grid=document.getElementById('grid');
+  if(!list.length){grid.innerHTML='<div class="no-results">No games match your search.</div>';return;}
+  grid.innerHTML=list.map(g=>{
+    const img=g.thumbnail?`<img src="${g.thumbnail}" alt="${g.name}" loading="lazy" onerror="this.outerHTML='<span class=img-placeholder>🎲</span>'"/>`:`<span class="img-placeholder">🎲</span>`;
+    const badge=(g.rating&&g.rating!=='N/A'&&g.rating!=='0.0')?`<div class="rating-badge">⭐ ${g.rating}</div>`:'';
+    const players=(g.minPlayers&&g.minPlayers!=='?')?`<span class="card-players">👥 ${g.minPlayers}${g.minPlayers!==g.maxPlayers?'–'+g.maxPlayers:''}</span>`:'';
+    return `<div class="card" onclick="window.open('${g.bgg}','_blank')">
+      <div class="img-wrap">${img}${badge}</div>
+      <div class="card-body">
+        <div class="card-name">${g.name}</div>
+        <div class="card-meta"><span class="card-type">${g.type}</span>${players}</div>
+        <div class="card-desc">${g.description}</div>
+        <a class="card-link" href="${g.bgg}" target="_blank" rel="noopener" onclick="event.stopPropagation()">View on BGG ↗</a>
+      </div></div>`;
   }).join('');
 }
 
-function getSorted(list) {
-  const by = document.getElementById('sortBy').value;
-  return [...list].sort((a, b) => {
-    if (by === 'rating') return parseFloat(b.rating||0) - parseFloat(a.rating||0);
-    if (by === 'players') return parseInt(a.minPlayers||99) - parseInt(b.minPlayers||99);
-    return a.name.localeCompare(b.name);
-  });
+function filter(){
+  const q=document.getElementById('q').value.trim().toLowerCase();
+  const t=document.getElementById('type').value.toLowerCase();
+  const s=document.getElementById('sort').value;
+  let list=GAMES.filter(g=>(!q||g.name.toLowerCase().includes(q))&&(!t||g.type.toLowerCase()===t));
+  list.sort((a,b)=>s==='rating'?parseFloat(b.rating||0)-parseFloat(a.rating||0):s==='players'?parseInt(a.minPlayers||99)-parseInt(b.minPlayers||99):a.name.localeCompare(b.name));
+  render(list);
 }
-
-function applyFilters() {
-  const q = document.getElementById('nameSearch').value.trim().toLowerCase();
-  const t = document.getElementById('typeFilter').value.toLowerCase();
-  const filtered = ALL_GAMES.filter(g =>
-    (!q || g.name.toLowerCase().includes(q)) &&
-    (!t || g.type.toLowerCase() === t)
-  );
-  buildGrid(getSorted(filtered));
-}
-
-// Show skeletons while loading
-document.getElementById('grid').innerHTML = skeletonCards(12);
-document.getElementById('totalCount').textContent = '47';
 
 fetch('/api/games')
-  .then(r => { if (!r.ok) throw new Error('API error ' + r.status); return r.json(); })
-  .then(data => {
-    ALL_GAMES = data;
-    document.getElementById('loadingMsg').style.display = 'none';
-    document.getElementById('totalCount').textContent = data.length;
-    applyFilters();
+  .then(r=>{if(!r.ok)throw new Error('API error '+r.status);return r.json();})
+  .then(data=>{
+    GAMES=data;
+    document.getElementById('msg').style.display='none';
+    document.getElementById('tot').textContent=data.length;
+    filter();
   })
-  .catch(err => {
-    document.getElementById('loadingMsg').style.display = 'none';
-    const b = document.getElementById('errorBanner');
-    b.textContent = '⚠️ Could not load BGG data: ' + err.message;
-    b.style.display = 'block';
-    document.getElementById('grid').innerHTML = '';
+  .catch(err=>{
+    document.getElementById('msg').style.display='none';
+    const e=document.getElementById('err');
+    e.textContent='⚠️ Could not load BGG data: '+err.message;
+    e.style.display='block';
+    document.getElementById('grid').innerHTML='';
   });
 
-document.getElementById('nameSearch').addEventListener('input', applyFilters);
-document.getElementById('typeFilter').addEventListener('change', applyFilters);
-document.getElementById('sortBy').addEventListener('change', applyFilters);
+['q','type','sort'].forEach(id=>document.getElementById(id).addEventListener(id==='q'?'input':'change',filter));
 </script>
 </body>
 </html>

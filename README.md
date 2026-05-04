@@ -1,54 +1,22 @@
-# 🎲 Board Game Catalog
-
-A personal board game collection viewer that fetches live box art, ratings, and player counts from BoardGameGeek.
-
-## Stack
-- **Frontend:** Vanilla HTML/CSS/JS (no framework needed)
-- **Backend:** Vercel Serverless Function (`/api/games.js`)
-- **Data source:** [BoardGameGeek XML API v2](https://boardgamegeek.com/wiki/page/BGG_XML_API2)
+# 🎲 Board Game Catalog v2
 
 ## Project Structure
 ```
-bgg-catalog/
+/
+├── index.html       ← frontend (served as static root)
 ├── api/
-│   └── games.js        # Serverless function — fetches BGG data server-side
-├── public/
-│   └── index.html      # Frontend card grid with search + filter + sort
-├── games.json          # Your game list (edit to add/remove games)
-├── package.json
+│   └── games.js     ← Vercel serverless function (no npm deps!)
 ├── vercel.json
-└── .gitignore
+└── package.json
 ```
 
-## Deploy to Vercel (5 minutes)
+## Deploy via GitHub → Vercel
+1. Upload ALL files to the **root** of your GitHub repo (not inside a subfolder)
+2. Go to vercel.com → Import repo → Deploy
+3. No build settings needed — leave everything default
 
-### Option A — Vercel CLI
-```bash
-npm install -g vercel
-cd bgg-catalog
-npm install
-vercel          # follow prompts, deploys instantly
-```
-
-### Option B — GitHub + Vercel Dashboard
-1. Push this folder to a new GitHub repo
-2. Go to [vercel.com](https://vercel.com) → **Add New Project**
-3. Import your GitHub repo
-4. Leave all settings as default → click **Deploy**
-5. Done — Vercel auto-deploys on every `git push`
-
-## Adding Games
-Edit `games.json` — add a new object with:
-```json
-{
-  "name": "Game Name",
-  "type": "Game Type",
-  "description": "Short description.",
-  "bgg_id": 123456,
-  "bgg": "https://boardgamegeek.com/boardgame/123456"
-}
-```
-Then redeploy. The API function handles fetching images/ratings automatically.
-
-## Caching
-The `/api/games` endpoint is cached for **24 hours** on Vercel's edge (`s-maxage=86400`), so BGG isn't hammered on every page load.
+## Key fix from v1
+- Removed all npm dependencies (no xml2js)
+- Simplified vercel.json (Vercel auto-detects api/ folder)
+- index.html is at repo root (not inside /public)
+- Uses CommonJS require() instead of ES module imports
