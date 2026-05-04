@@ -2,7 +2,7 @@ name: Fetch BGG Images
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - 'games.json'
       - '.github/workflows/fetch-images.yml'
