@@ -1,10 +1,9 @@
 {
   "version": 2,
-  "outputDirectory": ".",
   "rewrites": [
     {
       "source": "/bgg-img/:path*",
-      "destination": "https://cf.geekdo-images.com/:path*"
+      "destination": "/api/bgg-img/:path*"
     }
   ]
 }
