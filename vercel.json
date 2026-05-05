@@ -1,9 +1,0 @@
-{
-  "version": 2,
-  "rewrites": [
-    {
-      "source": "/bgg-img/:path*",
-      "destination": "https://cf.geekdo-images.com/:path*"
-    }
-  ]
-}
