@@ -19,7 +19,7 @@ export default async function handler(req, res) {
 
     const buffer = await response.arrayBuffer();
     res.setHeader('Content-Type', response.headers.get('content-type') || 'image/jpeg');
-    res.setHeader('Cache-Control', 'public, max-age=86400'); // cache for 1 day
+    res.setHeader('Cache-Control', 'public, max-age=86400');
     res.send(Buffer.from(buffer));
   } catch (err) {
     res.status(500).end();
