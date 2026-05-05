@@ -108,4 +108,39 @@ function render(list) {
       : `<span class="placeholder">🎲</span>`;
     const badge = (g.rating && g.rating !== 'N/A' && g.rating !== '0.0')
       ? `<div class="badge">⭐ ${g.rating}</div>` : '';
-    const players = (g.minPlayers && g.minPlayers
+    const players = (g.minPlayers && g.minPlayers !== '?')
+      ? `<span class="card-players">👥 ${g.minPlayers}${g.minPlayers !== g.maxPlayers ? '–'+g.maxPlayers : ''}</span>` : '';
+    return `<div class="card" onclick="window.open('${g.bgg}','_blank')">
+      <div class="img-wrap">${img}${badge}</div>
+      <div class="card-body">
+        <div class="card-name">${g.name}</div>
+        <div class="card-meta"><span class="card-type">${g.type}</span>${players}</div>
+        <div class="card-desc">${g.description}</div>
+        <a class="card-link" href="${g.bgg}" target="_blank" rel="noopener" onclick="event.stopPropagation()">View on BGG ↗</a>
+      </div></div>`;
+  }).join('');
+}
+function filter() {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const t = document.getElementById('type').value.toLowerCase();
+  const s = document.getElementById('sort').value;
+  let list = GAMES.filter(g => (!q || g.name.toLowerCase().includes(q)) && (!t || g.type.toLowerCase() === t));
+  list.sort((a,b) => s==='rating' ? parseFloat(b.rating||0)-parseFloat(a.rating||0)
+    : s==='players' ? parseInt(a.minPlayers||99)-parseInt(b.minPlayers||99)
+    : a.name.localeCompare(b.name));
+  render(list);
+}
+fetch('/games-data.json')
+  .then(r => r.json())
+  .then(data => {
+    GAMES = data;
+    document.getElementById('tot').textContent = data.length;
+    filter();
+  });
+['q','type','sort'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(id === 'q' ? 'input' : 'change', filter);
+});
+</script>
+</body>
+</html>
