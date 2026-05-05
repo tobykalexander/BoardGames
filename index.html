@@ -2,42 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
   <title>Board Game Catalog</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
     body{font-family:'Segoe UI',Arial,sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh}
     header{background:#1e293b;padding:24px 32px;border-bottom:1px solid #334155}
-    header h1{font-size:1.6rem;font-weight:700;color:#f8fafc}
+    header h1{font-size:1.6rem;font-weight:700}
     header p{color:#94a3b8;margin-top:4px;font-size:.9rem}
     .controls{display:flex;flex-wrap:wrap;gap:12px;padding:20px 32px;background:#1e293b;border-bottom:1px solid #334155}
     .controls input,.controls select{padding:10px 14px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#f1f5f9;font-size:.9rem;flex:1;min-width:180px}
-    .controls input:focus,.controls select:focus{outline:2px solid #3b82f6}
     .meta{padding:10px 32px;color:#64748b;font-size:.85rem}
     .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px;padding:24px 32px}
     .card{background:#1e293b;border-radius:12px;overflow:hidden;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column;border:1px solid #334155;cursor:pointer}
     .card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,.6)}
-    .img-wrap{width:100%;height:175px;background:#0f172a;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative}
+    .img-wrap{width:100%;height:175px;background:#0f172a;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
     .img-wrap img{width:100%;height:100%;object-fit:cover}
-    .img-placeholder{font-size:3rem;color:#334155}
-    .rating-badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.75);color:#fbbf24;font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:999px}
+    .placeholder{font-size:3rem;color:#334155}
+    .badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.75);color:#fbbf24;font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:999px}
     .card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:6px}
-    .card-name{font-size:.95rem;font-weight:700;color:#f8fafc;line-height:1.3}
-    .card-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:2px}
+    .card-name{font-size:.95rem;font-weight:700;line-height:1.3}
+    .card-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:2px}
     .card-type{font-size:.72rem;background:#172554;color:#93c5fd;border:1px solid #1d4ed8;border-radius:999px;padding:3px 9px}
     .card-players{font-size:.72rem;color:#94a3b8}
     .card-desc{font-size:.79rem;color:#94a3b8;line-height:1.5;flex:1;margin-top:4px}
-    .card-link{display:inline-block;margin-top:10px;font-size:.8rem;color:#60a5fa;text-decoration:none;font-weight:600}
+    .card-link{margin-top:10px;font-size:.8rem;color:#60a5fa;text-decoration:none;font-weight:600}
     .card-link:hover{text-decoration:underline}
     .no-results{text-align:center;color:#64748b;padding:60px;grid-column:1/-1}
-    .skeleton{background:linear-gradient(90deg,#1e293b 25%,#334155 50%,#1e293b 75%);background-size:200% 100%;animation:shimmer 1.4s infinite}
-    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-    .sk-card{border-radius:12px;overflow:hidden;border:1px solid #334155}
-    .sk-img{height:175px}.sk-body{padding:14px}
-    .sk-line{height:14px;border-radius:4px;margin-bottom:10px}
-    .sk-line.s{width:55%}.sk-line.m{width:80%}
-    .error{background:#450a0a;border:1px solid #991b1b;color:#fca5a5;padding:12px 32px;font-size:.9rem;display:none}
-    @media(max-width:600px){.grid{padding:12px}.controls,.meta{padding:12px 16px}header{padding:16px 12px}}
+    @media(max-width:600px){.grid,.controls,.meta{padding:12px}header{padding:16px}}
   </style>
 </head>
 <body>
@@ -102,22 +94,22 @@
     <option value="players">Sort: Min Players</option>
   </select>
 </div>
-<div class="meta">Showing <strong id="vis">—</strong> of <strong id="tot">47</strong> games &nbsp;<span id="msg" style="color:#3b82f6">⏳ Loading BGG data…</span></div>
-<div id="err" class="error"></div>
+<div class="meta">Showing <strong id="vis">—</strong> of <strong id="tot">—</strong> games</div>
 <div class="grid" id="grid"></div>
 <script>
-let GAMES=[];
-const skeletons=n=>Array.from({length:n},()=>`<div class="sk-card"><div class="sk-img skeleton"></div><div class="sk-body"><div class="sk-line skeleton"></div><div class="sk-line m skeleton"></div><div class="sk-line s skeleton"></div></div></div>`).join('');
-document.getElementById('grid').innerHTML=skeletons(12);
-
-function render(list){
-  document.getElementById('vis').textContent=list.length;
-  const grid=document.getElementById('grid');
-  if(!list.length){grid.innerHTML='<div class="no-results">No games match your search.</div>';return;}
-  grid.innerHTML=list.map(g=>{
-    const img=g.thumbnail?`<img src="${g.thumbnail}" alt="${g.name}" loading="lazy" onerror="this.outerHTML='<span class=img-placeholder>🎲</span>'"/>`:`<span class="img-placeholder">🎲</span>`;
-    const badge=(g.rating&&g.rating!=='N/A'&&g.rating!=='0.0')?`<div class="rating-badge">⭐ ${g.rating}</div>`:'';
-    const players=(g.minPlayers&&g.minPlayers!=='?')?`<span class="card-players">👥 ${g.minPlayers}${g.minPlayers!==g.maxPlayers?'–'+g.maxPlayers:''}</span>`:'';
+let GAMES = [];
+function render(list) {
+  document.getElementById('vis').textContent = list.length;
+  const grid = document.getElementById('grid');
+  if (!list.length) { grid.innerHTML = '<div class="no-results">No games match.</div>'; return; }
+  grid.innerHTML = list.map(g => {
+    const img = g.thumbnail
+      ? `<img src="${g.thumbnail}" alt="${g.name}" loading="lazy" onerror="this.outerHTML='<span class=placeholder>🎲</span>'"/>`
+      : `<span class="placeholder">🎲</span>`;
+    const badge = (g.rating && g.rating !== 'N/A' && g.rating !== '0.0')
+      ? `<div class="badge">⭐ ${g.rating}</div>` : '';
+    const players = (g.minPlayers && g.minPlayers !== '?')
+      ? `<span class="card-players">👥 ${g.minPlayers}${g.minPlayers !== g.maxPlayers ? '–'+g.maxPlayers : ''}</span>` : '';
     return `<div class="card" onclick="window.open('${g.bgg}','_blank')">
       <div class="img-wrap">${img}${badge}</div>
       <div class="card-body">
@@ -128,33 +120,27 @@ function render(list){
       </div></div>`;
   }).join('');
 }
-
-function filter(){
-  const q=document.getElementById('q').value.trim().toLowerCase();
-  const t=document.getElementById('type').value.toLowerCase();
-  const s=document.getElementById('sort').value;
-  let list=GAMES.filter(g=>(!q||g.name.toLowerCase().includes(q))&&(!t||g.type.toLowerCase()===t));
-  list.sort((a,b)=>s==='rating'?parseFloat(b.rating||0)-parseFloat(a.rating||0):s==='players'?parseInt(a.minPlayers||99)-parseInt(b.minPlayers||99):a.name.localeCompare(b.name));
+function filter() {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const t = document.getElementById('type').value.toLowerCase();
+  const s = document.getElementById('sort').value;
+  let list = GAMES.filter(g => (!q || g.name.toLowerCase().includes(q)) && (!t || g.type.toLowerCase() === t));
+  list.sort((a,b) => s==='rating' ? parseFloat(b.rating||0)-parseFloat(a.rating||0)
+    : s==='players' ? parseInt(a.minPlayers||99)-parseInt(b.minPlayers||99)
+    : a.name.localeCompare(b.name));
   render(list);
 }
-
-fetch('/api/games')
-  .then(r=>{if(!r.ok)throw new Error('API error '+r.status);return r.json();})
-  .then(data=>{
-    GAMES=data;
-    document.getElementById('msg').style.display='none';
-    document.getElementById('tot').textContent=data.length;
+fetch('/games-data.json')
+  .then(r => r.json())
+  .then(data => {
+    GAMES = data;
+    document.getElementById('tot').textContent = data.length;
     filter();
-  })
-  .catch(err=>{
-    document.getElementById('msg').style.display='none';
-    const e=document.getElementById('err');
-    e.textContent='⚠️ Could not load BGG data: '+err.message;
-    e.style.display='block';
-    document.getElementById('grid').innerHTML='';
   });
-
-['q','type','sort'].forEach(id=>document.getElementById(id).addEventListener(id==='q'?'input':'change',filter));
+['q','type','sort'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(id === 'q' ? 'input' : 'change', filter);
+});
 </script>
 </body>
 </html>
