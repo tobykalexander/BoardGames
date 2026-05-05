@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Board Game Catalog</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Segoe UI',Arial,sans-serif;background:#0f172a;color:#f1f5f9;min-height:100vh}
+    header{background:#1e293b;padding:24px 32px;border-bottom:1px solid #334155}
+    header h1{font-size:1.6rem;font-weight:700}
+    header p{color:#94a3b8;margin-top:4px;font-size:.9rem}
+    .controls{display:flex;flex-wrap:wrap;gap:12px;padding:20px 32px;background:#1e293b;border-bottom:1px solid #334155}
+    .controls input,.controls select{padding:10px 14px;border-radius:8px;border:1px solid #475569;background:#0f172a;color:#f1f5f9;font-size:.9rem;flex:1;min-width:180px}
+    .meta{padding:10px 32px;color:#64748b;font-size:.85rem}
+    .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:20px;padding:24px 32px}
+    .card{background:#1e293b;border-radius:12px;overflow:hidden;transition:transform .18s,box-shadow .18s;display:flex;flex-direction:column;border:1px solid #334155;cursor:pointer}
+    .card:hover{transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,.6)}
+    .img-wrap{width:100%;height:175px;background:#0f172a;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
+    .img-wrap img{width:100%;height:100%;object-fit:cover}
+    .placeholder{font-size:3rem;color:#334155}
+    .badge{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.75);color:#fbbf24;font-size:.75rem;font-weight:700;padding:3px 8px;border-radius:999px}
+    .card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:6px}
+    .card-name{font-size:.95rem;font-weight:700;line-height:1.3}
+    .card-meta{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:2px}
+    .card-type{font-size:.72rem;background:#172554;color:#93c5fd;border:1px solid #1d4ed8;border-radius:999px;padding:3px 9px}
+    .card-players{font-size:.72rem;color:#94a3b8}
+    .card-desc{font-size:.79rem;color:#94a3b8;line-height:1.5;flex:1;margin-top:4px}
+    .card-link{margin-top:10px;font-size:.8rem;color:#60a5fa;text-decoration:none;font-weight:600}
+    .card-link:hover{text-decoration:underline}
+    .no-results{text-align:center;color:#64748b;padding:60px;grid-column:1/-1}
+    .error{text-align:center;color:#f87171;padding:60px;grid-column:1/-1;font-family:monospace;font-size:.85rem}
+    @media(max-width:600px){.grid,.controls,.meta{padding:12px}header{padding:16px}}
+  </style>
+</head>
+<body>
+<header>
+  <h1>🎲 Board Game Catalog</h1>
+  <p>Personal collection · Click any card to view on BoardGameGeek</p>
+</header>
+<div class="controls">
+  <input id="q" type="text" placeholder="🔍 Search by name…"/>
+  <select id="type">
+    <option value="">All game types</option>
+    <option value="4X / Sci-fi">4X / Sci-fi</option>
+    <option value="4X / Strategy">4X / Strategy</option>
+    <option value="Abstract / Area majority">Abstract / Area majority</option>
+    <option value="Abstract / Two-player strategy">Abstract / Two-player strategy</option>
+    <option value="Adventure / Competitive">Adventure / Competitive</option>
+    <option value="Area control / Bag building">Area control / Bag building</option>
+    <option value="Area control / Fantasy strategy">Area control / Fantasy strategy</option>
+    <option value="Card drafting / Tableau building">Card drafting / Tableau building</option>
+    <option value="Card layering / Abstract">Card layering / Abstract</option>
+    <option value="Card shedding / Ladder climbing">Card shedding / Ladder climbing</option>
+    <option value="Card strategy / Engine building">Card strategy / Engine building</option>
+    <option value="City building / Tile placement">City building / Tile placement</option>
+    <option value="Civilization / Card strategy">Civilization / Card strategy</option>
+    <option value="Cooperative / Adventure">Cooperative / Adventure</option>
+    <option value="Cooperative / Engine building">Cooperative / Engine building</option>
+    <option value="Cooperative / Hand management">Cooperative / Hand management</option>
+    <option value="Cooperative / Puzzle">Cooperative / Puzzle</option>
+    <option value="Cooperative / Thematic">Cooperative / Thematic</option>
+    <option value="Cooperative / Worker placement">Cooperative / Worker placement</option>
+    <option value="Deck building / Battle">Deck building / Battle</option>
+    <option value="Deck building / Nature">Deck building / Nature</option>
+    <option value="Dice combat / Dueling">Dice combat / Dueling</option>
+    <option value="Dice drafting / Puzzle">Dice drafting / Puzzle</option>
+    <option value="Engine building / Dice">Engine building / Dice</option>
+    <option value="Engine building / Tableau building">Engine building / Tableau building</option>
+    <option value="Euro / Dice drafting">Euro / Dice drafting</option>
+    <option value="Family / Cooperative">Family / Cooperative</option>
+    <option value="Family strategy / Route building">Family strategy / Route building</option>
+    <option value="Historical / Educational">Historical / Educational</option>
+    <option value="Polyomino / Simultaneous play">Polyomino / Simultaneous play</option>
+    <option value="Push your luck / Bag building">Push your luck / Bag building</option>
+    <option value="Sci-fi conflict / Card driven">Sci-fi conflict / Card driven</option>
+    <option value="Sci-fi strategy">Sci-fi strategy</option>
+    <option value="Set collection / Route building">Set collection / Route building</option>
+    <option value="Set collection / Strategy">Set collection / Strategy</option>
+    <option value="Tile drafting / Family strategy">Tile drafting / Family strategy</option>
+    <option value="Tile laying / Nature">Tile laying / Nature</option>
+    <option value="Tile placement / Ecosystem">Tile placement / Ecosystem</option>
+    <option value="Tile placement / Nature">Tile placement / Nature</option>
+    <option value="Tile placement / Pattern building">Tile placement / Pattern building</option>
+    <option value="Tile placement / Strategy">Tile placement / Strategy</option>
+    <option value="War game / Asymmetric">War game / Asymmetric</option>
+    <option value="Worker placement / Area control">Worker placement / Area control</option>
+    <option value="Worker placement / Nature">Worker placement / Nature</option>
+    <option value="Worker placement / Resource management">Worker placement / Resource management</option>
+    <option value="Worker placement / Tableau building">Worker placement / Tableau building</option>
+  </select>
+  <select id="sort">
+    <option value="name">Sort: Name A–Z</option>
+    <option value="rating">Sort: BGG Rating ↓</option>
+    <option value="players">Sort: Min Players</option>
+  </select>
+</div>
+<div class="meta">Showing <strong id="vis">—</strong> of <strong id="tot">—</strong> games</div>
+<div class="grid" id="grid"></div>
+<script>
+let GAMES = [];
+function render(list) {
+  document.getElementById('vis').textContent = list.length;
+  const grid = document.getElementById('grid');
+  if (!list.length) { grid.innerHTML = '<div class="no-results">No games match.</div>'; return; }
+  grid.innerHTML = list.map(g => {
+    const img = g.thumbnail
+      ? `<img src="${g.thumbnail}" alt="${g.name}" loading="lazy" onerror="this.outerHTML='<span class=placeholder>🎲</span>'"/>`
+      : `<span class="placeholder">🎲</span>`;
+    const badge = (g.rating && g.rating !== 'N/A' && g.rating !== '0.0')
+      ? `<div class="badge">⭐ ${g.rating}</div>` : '';
+    const players = (g.minPlayers && g.minPlayers !== '?')
+      ? `<span class="card-players">👥 ${g.minPlayers}${g.minPlayers !== g.maxPlayers ? '–'+g.maxPlayers : ''}</span>` : '';
+    return `<div class="card" onclick="window.open('${g.bgg}','_blank')">
+      <div class="img-wrap">${img}${badge}</div>
+      <div class="card-body">
+        <div class="card-name">${g.name}</div>
+        <div class="card-meta"><span class="card-type">${g.type}</span>${players}</div>
+        <div class="card-desc">${g.description}</div>
+        <a class="card-link" href="${g.bgg}" target="_blank" rel="noopener" onclick="event.stopPropagation()">View on BGG ↗</a>
+      </div></div>`;
+  }).join('');
+}
+function filter() {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const t = document.getElementById('type').value.toLowerCase();
+  const s = document.getElementById('sort').value;
+  let list = GAMES.filter(g => (!q || g.name.toLowerCase().includes(q)) && (!t || g.type.toLowerCase() === t));
+  list.sort((a,b) => s==='rating' ? parseFloat(b.rating||0)-parseFloat(a.rating||0)
+    : s==='players' ? parseInt(a.minPlayers||99)-parseInt(b.minPlayers||99)
+    : a.name.localeCompare(b.name));
+  render(list);
+}
+fetch('/games-data.json')
+  .then(r => {
+    if (!r.ok) throw new Error('HTTP ' + r.status + ' fetching games-data.json');
+    return r.json();
+  })
+  .then(data => {
+    if (!Array.isArray(data)) throw new Error('Expected array, got: ' + typeof data);
+    GAMES = data;
+    document.getElementById('tot').textContent = data.length;
+    filter();
+  })
+  .catch(e => {
+    document.getElementById('grid').innerHTML =
+      '<div class="error">❌ Error loading games: ' + e.message + '</div>';
+  });
+['q','type','sort'].forEach(id => {
+  const el = document.getElementById(id);
+  el.addEventListener(id === 'q' ? 'input' : 'change', filter);
+});
+</script>
+</body>
+</html>
