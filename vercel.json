@@ -1,10 +1,3 @@
 {
-  "version": 2,
-  "rewrites": [
-    {
-      "source": "/bgg-img/:path*",
-      "destination": "https://images.weserv.nl/?url=https://cf.geekdo-images.com/:path*"
-    }
-  ]
+  "version": 2
 }
-

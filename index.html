@@ -99,8 +99,18 @@ header p{color:#94a3b8;margin-top:4px;font-size:.9rem}
 <div class="grid" id="grid"></div>
 <script>
 let GAMES = [];
+// Convert any thumbnail value into a request that goes through /api/bgg-img.
+// Handles three input shapes:
+//   1) "/bgg-img/<path>"            -> rebuild full cf.geekdo-images.com URL, then proxy it
+//   2) "https://cf.geekdo-images.com/..." (or any external URL) -> proxy as-is
+//   3) anything else local ("/...", "data:...") -> leave untouched
 function proxify(u) {
-  if (!u || u.startsWith('/') || u.startsWith('data:')) return u;
+  if (!u) return u;
+  if (u.startsWith('/bgg-img/')) {
+    const full = 'https://cf.geekdo-images.com/' + u.slice('/bgg-img/'.length);
+    return '/api/bgg-img?url=' + encodeURIComponent(full);
+  }
+  if (u.startsWith('/') || u.startsWith('data:')) return u;
   return '/api/bgg-img?url=' + encodeURIComponent(u);
 }
 function render(list) {
