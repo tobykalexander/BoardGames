@@ -1,9 +1,8 @@
 // api/bgg-img/index.js
-// Vercel serverless function: proxy BoardGameGeek images so the browser
-// doesn't hit the hotlink-protected cf.geekdo-images.com CDN directly.
-// BGG returns 403 Forbidden when images are requested with a Referer
-// other than boardgamegeek.com. This proxy fetches the image server-side
-// with the right Referer and streams it back to the browser.
+// Vercel serverless function: proxy BoardGameGeek images.
+// Uses ?url=<encoded full URL> rather than path segments because Vercel's
+// path-to-regexp router chokes on the : ( ) characters in real BGG URLs
+// (e.g. "filters:no_upscale():strip_icc()") even for catch-all routes.
 
 const ALLOWED_HOSTS = new Set([
   'cf.geekdo-images.com',
@@ -17,7 +16,6 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing url parameter' });
   }
 
-  // Normalize protocol-relative URLs like //cf.geekdo-images.com/...
   let target = decodeURIComponent(raw);
   if (target.startsWith('//')) target = 'https:' + target;
 
@@ -35,12 +33,11 @@ export default async function handler(req, res) {
   try {
     const upstream = await fetch(parsed.toString(), {
       headers: {
-        // The header BGG's CDN checks for hotlink protection
         Referer: 'https://boardgamegeek.com/',
         'User-Agent':
-          'Mozilla/5.0 (compatible; BoardGameCatalog/1.0; +https://board-games-sigma.vercel.app)',
+          'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         Accept:
-          'image/avif,image/webp,image/png,image/jpeg,image/*,*/*;q=0.8',
+          'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
       },
     });
 
@@ -54,7 +51,6 @@ export default async function handler(req, res) {
     const buf = Buffer.from(await upstream.arrayBuffer());
 
     res.setHeader('Content-Type', contentType);
-    // Cache aggressively at Vercel's edge - BGG art rarely changes
     res.setHeader(
       'Cache-Control',
       'public, max-age=86400, s-maxage=2592000, stale-while-revalidate=604800'
