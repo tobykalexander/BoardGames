@@ -32,6 +32,7 @@ header p{color:#94a3b8;margin-top:4px;font-size:.9rem}
 .error{text-align:center;color:#f87171;padding:60px;grid-column:1/-1;font-family:monospace;font-size:.85rem}
 @media(max-width:600px){.grid,.controls,.meta{padding:12px}header{padding:16px}}
 </style>
+<meta name="referrer" content="no-referrer"/>
 </head>
 <body>
 <header>
@@ -99,22 +100,16 @@ header p{color:#94a3b8;margin-top:4px;font-size:.9rem}
 <div class="grid" id="grid"></div>
 <script>
 let GAMES = [];
-// Convert any thumbnail value into a query-string call to /api/bgg-img.
-// Query strings sidestep Vercel's path-to-regexp router, which breaks on
-// the : ( ) characters in real BGG URLs.
+// Convert /bgg-img/<path> to a direct cf.geekdo-images.com URL.
+// The <img> tag uses referrerpolicy="no-referrer" so BGG sees no Referer
+// and serves the image without hotlink-blocking us.
 function proxify(u) {
   if (!u) return u;
-  let full;
   if (u.startsWith('/bgg-img/')) {
-    full = 'https://cf.geekdo-images.com/' + u.slice('/bgg-img/'.length);
-  } else if (u.startsWith('https://cf.geekdo-images.com/') ||
-             u.startsWith('http://cf.geekdo-images.com/') ||
-             u.startsWith('//cf.geekdo-images.com/')) {
-    full = u.startsWith('//') ? 'https:' + u : u;
-  } else {
-    return u; // local or already-proxied — leave alone
+    return 'https://cf.geekdo-images.com/' + u.slice('/bgg-img/'.length);
   }
-  return '/api/bgg-img?url=' + encodeURIComponent(full);
+  if (u.startsWith('//')) return 'https:' + u;
+  return u;
 }
 function render(list) {
 document.getElementById('vis').textContent = list.length;
@@ -122,7 +117,7 @@ const grid = document.getElementById('grid');
 if (!list.length) { grid.innerHTML = '<div class="no-results">No games match.</div>'; return; }
 grid.innerHTML = list.map(g => {
 const img = g.thumbnail
-? `<img src="${proxify(g.thumbnail)}" alt="${g.name}" loading="lazy" onerror="this.outerHTML='<span class=placeholder>🎲</span>'"/>`
+? `<img src="${proxify(g.thumbnail)}" alt="${g.name}" loading="lazy" referrerpolicy="no-referrer" onerror="this.outerHTML='<span class=placeholder>🎲</span>'"/>`
 : `<span class="placeholder">🎲</span>`;
 const badge = (g.rating && g.rating !== 'N/A' && g.rating !== '0.0')
 ? `<div class="badge">⭐ ${g.rating}</div>` : '';
