@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta name="referrer" content="no-referrer"/>
 <title>Board Game Catalog</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -32,7 +33,6 @@ header p{color:#94a3b8;margin-top:4px;font-size:.9rem}
 .error{text-align:center;color:#f87171;padding:60px;grid-column:1/-1;font-family:monospace;font-size:.85rem}
 @media(max-width:600px){.grid,.controls,.meta{padding:12px}header{padding:16px}}
 </style>
-<meta name="referrer" content="no-referrer"/>
 </head>
 <body>
 <header>
@@ -100,9 +100,9 @@ header p{color:#94a3b8;margin-top:4px;font-size:.9rem}
 <div class="grid" id="grid"></div>
 <script>
 let GAMES = [];
-// Convert /bgg-img/<path> to a direct cf.geekdo-images.com URL.
-// The <img> tag uses referrerpolicy="no-referrer" so BGG sees no Referer
-// and serves the image without hotlink-blocking us.
+// After the GitHub Actions refresh, thumbnails will be simple direct URLs
+// like https://cf.geekdo-images.com/images/pic12345_t.jpg. We still handle
+// the legacy /bgg-img/<path> shape for safety in case some entries didn't refresh.
 function proxify(u) {
   if (!u) return u;
   if (u.startsWith('/bgg-img/')) {
