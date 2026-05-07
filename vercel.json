@@ -1,9 +1,3 @@
 {
-  "version": 2,
-  "rewrites": [
-    {
-      "source": "/bgg-img/:path*",
-      "destination": "/api/bgg-img/:path*"
-    }
-  ]
+  "version": 2
 }
